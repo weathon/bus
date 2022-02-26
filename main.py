@@ -37,6 +37,6 @@ async def read_items():
     return fileContent
 
 
-@app.get("/", response_class=FileResponse)
+@app.get("/audio", response_class=FileResponse)
 async def main():
     return "audio.mp3"

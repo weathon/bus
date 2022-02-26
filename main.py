@@ -2,6 +2,7 @@
 # pip3 install requests --user
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import requests 
 
 origins =["*"]
 app = FastAPI()
@@ -16,5 +17,5 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    requests.get('https://gocomo.doublemap.com/map/v2/stops')
+    r = requests.get('https://gocomo.doublemap.com/map/v2/routes')
     return r.json()

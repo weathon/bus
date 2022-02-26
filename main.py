@@ -45,3 +45,7 @@ async def read_items():
 @app.get("/audio", response_class=FileResponse)
 async def main():
     return "audio.mp3"
+
+@app.get("/audio", response_class=FileResponse)
+async def main():
+    return "dot.png"

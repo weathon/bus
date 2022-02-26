@@ -48,7 +48,7 @@
 </ul>
 
 
-<ion-modal id="card-modal">
+<ion-modal id="card-modal" backdropDismiss=false>
 
     <ion-content>
         <ion-header translucent>
@@ -68,10 +68,14 @@
             <ion-button>Set The Alarm!</ion-button>
         </ion-item>
     </ion-content>
+    <!-- The bus icon is created by <a href="https://iconscout.com/icons/dot" target="_blank">Dot Icon</a> by <a href="https://iconscout.com/contributors/daniel-bruce">Daniel Bruce</a> on <a href="https://iconscout.com">Iconscout</a> -->
 </ion-modal>
 
 
 <script>
+    document.getElementById("card-modal").backdropDismiss = false;
+    document.getElementById("card-modal").showBackdrop = 1;
+
     function initMap() {
         const myLatLng = { lat: 38.9517, lng: -92.3341 };
         map = new google.maps.Map(document.getElementById("GMap"), { //id wentitt gan
@@ -81,7 +85,7 @@
     }
 
     // fetch json and https://gocomo.doublemap.com/map/v2/routes
-    // alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server.")
+    // alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
     new Vue({
         el: '#app',
         data: {
@@ -119,10 +123,10 @@
                     })
                     .then(function (json) {
                         console.log(json)
-                        for(var i = 0; i < json.length; i++){ //copolit thiw whole function, bnot json() tho
-                                console.log(json[i].id)
-                            if(response[i].id == routeID){
-                                var route = response[i]
+                        for (var i = 0; i < json.length; i++) { //copolit thiw whole function, bnot json() tho
+                            console.log(json[i].id)
+                            if (json[i].id == routeID) {
+                                var route = json[i]
                                 break;
                             }
                         }
@@ -134,19 +138,46 @@
                         // });
                         const triangleCoords = [
                         ];
-                        for (var i = 0; i < json.path.length() / 2; i++) {
-                            triangleCoords.push({ lat: json.path[i * 2], lng: json.path[i * 2 + 1] });
+                        for (var i = 0; i < route.path.length / 2; i++) {
+                            triangleCoords.push({ lat: route.path[i * 2], lng: route.path[i * 2 + 1] });
                             //you sure this is from copolit, gangkaishi hai yiweishism wanyi/ pathshism yuyiduihuansuanttyiweisvg zhejianzhishishengqi aaa!!!push houmianquanbushengchengchulais
                         }
+                        var stops = {}; //yuenixnbunenghzijie stops;
+                        fetch('http://coder.weathon.top:8888/stops')
+                            .then(function (response) {
+                                return response.json();
+                            })
+                            .then(function (json) {
+                                var stops = json;
+                                console.log(stops)
+                                for (var i = 0; i < route.stops.length; i++) {
+                                    for (var j = 0; j < stops.length; j++) {
+                                        // console.log(j.id) stupid copolit 
+                                        if (stops[j].id == route.stops[i]) {
+                                            var stop = stops[j]
+                                            console.log(stop)
+                                            new google.maps.Marker({
+                                                position: { lat: stop.lat, lng: stop.lon },
+                                                map,
+                                                icon:"dot.png",
+                                            });
+                                        }
+                                    }
+                                }
+                            })
+                        // console.log(stops)//exinxkouwngjileyifbuhlongsuan
+
+
                         // Construct the polygon.
-                        const bermudaTriangle = new google.maps.Polygon({
-                            paths: triangleCoords,
-                            strokeColor: "#FF0000",
+                        console.log(triangleCoords)
+                        bermudaTriangle = new google.maps.Polyline({
+                            path: triangleCoords,
+                            strokeColor: "#" + route.color,
                             strokeOpacity: 0.8,
-                            strokeWeight: 2,
-                            fillColor: "#FF0000",
-                            fillOpacity: 0.35,
+                            strokeWeight: 4,
                         });
+                        bermudaTriangle.setMap(map);
+                        // xkoukouke gaicheng butianchong yanse yijing qingkonghenduoshiqing shiqinghencudobuxinagquchifan
                     });
 
             }

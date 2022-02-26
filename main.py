@@ -34,6 +34,7 @@ async def read_items():
     f = open("index.html", "r")
     fileContent = f.read()
     f.close()
+    return fileContent
 
 
 @app.get("/", response_class=FileResponse)

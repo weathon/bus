@@ -13,11 +13,11 @@
 </head>
 
 <body>
+
+    <!-- Ajax get a list and put in a list -->
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgMo2y743lim1h4IGq3BvlUl8Ar0fl1hQ&callback=initMap&v=weekly"
         async></script>
-    <!-- Ajax get a list and put in a list -->
-
     <ion-app id="app">
         <ion-header translucent>
             <ion-toolbar>
@@ -49,6 +49,7 @@
 
 
 <ion-modal id="card-modal">
+
     <ion-content>
         <ion-header translucent>
             <ion-toolbar>
@@ -58,25 +59,25 @@
         <br />
         <ion-list-header>Select A Bus Stop That You Will Get On The Bus</ion-list-header>
         <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
-        <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification. </ion-list-header>
-        <ion-item><ion-input type="number" placeholder="Enter a number"></ion-input></ion-item>
-        <ion-item><ion-button>Set The Alarm!</ion-button></ion-item>
+        <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
+        </ion-list-header>
+        <ion-item>
+            <ion-input type="number" placeholder="Enter a number"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-button>Set The Alarm!</ion-button>
+        </ion-item>
     </ion-content>
 </ion-modal>
 
 
 <script>
     function initMap() {
-        const myLatLng = { lat: -25.363, lng: 131.044 };
-        const map = new google.maps.Map(document.getElementById("GMap"), { //id wentitt gan
-            zoom: 4,
+        const myLatLng = { lat: 38.9517, lng: -92.3341 };
+        map = new google.maps.Map(document.getElementById("GMap"), { //id wentitt gan
+            zoom: 12,
             center: myLatLng,
-        });
-
-        new google.maps.Marker({
-            position: myLatLng,
-            map,
-        });
+        }); //yong consta xiaianyongbuliao
     }
 
     // fetch json and https://gocomo.doublemap.com/map/v2/routes
@@ -109,7 +110,45 @@
             setAlert: function (routeID) {
                 // dis = prompt("The reminding distance threshold (in miles): ");
                 document.getElementById("card-modal").present()
-                initMap()
+                // initMap()
+                fetch('http://coder.weathon.top:8888/routes')
+                    .then(function (response) {
+                        console.log(routeID)
+                        // console.log(response.json()) ajax!!wangjile!
+                        return response.json();
+                    })
+                    .then(function (json) {
+                        console.log(json)
+                        for(var i = 0; i < json.length; i++){ //copolit thiw whole function, bnot json() tho
+                                console.log(json[i].id)
+                            if(response[i].id == routeID){
+                                var route = response[i]
+                                break;
+                            }
+                        }
+                        // return route;
+                        // new google.maps.Marker({
+                        //     // myLatLng
+                        //     position: { lat: 38.9517, lng: -92.3341 },
+                        //     map,
+                        // });
+                        const triangleCoords = [
+                        ];
+                        for (var i = 0; i < json.path.length() / 2; i++) {
+                            triangleCoords.push({ lat: json.path[i * 2], lng: json.path[i * 2 + 1] });
+                            //you sure this is from copolit, gangkaishi hai yiweishism wanyi/ pathshism yuyiduihuansuanttyiweisvg zhejianzhishishengqi aaa!!!push houmianquanbushengchengchulais
+                        }
+                        // Construct the polygon.
+                        const bermudaTriangle = new google.maps.Polygon({
+                            paths: triangleCoords,
+                            strokeColor: "#FF0000",
+                            strokeOpacity: 0.8,
+                            strokeWeight: 2,
+                            fillColor: "#FF0000",
+                            fillOpacity: 0.35,
+                        });
+                    });
+
             }
         }
     });

@@ -64,7 +64,7 @@
             <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
             </ion-list-header>
             <ion-item>
-                <ion-input type="number" value="0.5" placeholder="Enter a number"></ion-input>
+                <ion-input type="number" value="0.3" placeholder="Enter a number"></ion-input>
             </ion-item>
         </div>
         <ion-button expand="block" onclick="startTracking()" id="GoButton">Set The Notification!</ion-button>
@@ -113,7 +113,7 @@
                         busMarkers[buses[i].id].setPosition({ lat: buses[i].lat, lng: buses[i].lon });
                         // haversine_distance(busMarkers[buses[i].id], StopObj);
                         realMile = haversine_distance(busMarkers[buses[i].id], StopMark);
-                        document.getElementById("mile").innerHTML = "The distance from the bus to the stop is " + realMile + " miles";
+                        document.getElementById("mile").innerText = "The distance from the bus to the stop is " + realMile + " miles";
                         if (realMile <= milage) {
                             var audio = new Audio('http://coder.weathon.top:8888/audio');
                             audio.play();

@@ -56,15 +56,18 @@
         </ion-header>
         <br />
         <ion-list-header>Select A Bus Stop That You Will Get On The Bus</ion-list-header>
-        <!-- <p>Now this app won't show the buses' location, sorry.</p> -->
+        <p>Now this app is calculating the line distance not the driving distance, sorry.</p>
+        <!-- bozishangsuanruantyrunhuxihlongxou -->
         <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
-        <p id="selected"></p>
-        <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
-        </ion-list-header>
-        <ion-item>
-            <ion-input type="number" placeholder="Enter a number"></ion-input>
-        </ion-item>
-        <ion-button expand="block" onclick="startTracking()">Set The Notification!</ion-button>
+        <div id="form">
+            <p id="selected"></p>
+            <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
+            </ion-list-header>
+            <ion-item>
+                <ion-input type="number" value="0.5" placeholder="Enter a number"></ion-input>
+            </ion-item>
+        </div>
+        <ion-button expand="block" onclick="startTracking()" id="GoButton">Set The Notification!</ion-button>
     </ion-content>
 </ion-modal>
 
@@ -74,10 +77,54 @@
     document.getElementById("card-modal").showBackdrop = 1;
     var selectedStop = -1;
     var selectedRoute = -1;
-    function checkForBus(possibleBusIDs, milage, selectedStop) {
-        console.log([possibleBusIDs, milage, selectedStop])
+    var stops = [];
+
+    function haversine_distance(mk1, mk2) {
+        var R = 3958.8; // Radius of the Earth in miles
+        var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+        var rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+        var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+        var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+
+        var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+        return d;
+
+        //   https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
     }
-    
+    function getBusObjectByID(buses, id) {
+        for (var i = 0; i < buses.length; i++) {
+            if (buses[i].id == id) {
+                return buses[i];
+            }
+        }
+    }
+    function checkForBus(possibleBusIDs, milage, selectedStop, StopObj, busMarkers, StopMark) {
+        // console.log(busMarkers)
+        fetch('http://coder.weathon.top:8888/buses')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (buses) {
+                console.log("buses")
+                for (var i = 0; i < buses.length; i++) {
+                    if (possibleBusIDs.includes(buses[i].id)) {
+                        // if (buses[i].id in possibleBusIDs) {
+                        // console.log("found not found faruannashou shouruan aashiain")
+                        busMarkers[buses[i].id].setPosition({ lat: buses[i].lat, lng: buses[i].lon });
+                        // haversine_distance(busMarkers[buses[i].id], StopObj);
+                        if (haversine_distance(busMarkers[buses[i].id], StopMark) <= milage) {
+                            var audio = new Audio('http://coder.weathon.top:8888/audio');
+                            audio.play();
+                        }
+                    }
+                }
+            })
+
+        console.log([possibleBusIDs, milage, StopMark, selectedStop])
+        //weismyaoxiamiangengxing?dui oh new he gengxingyaozaiwaimianhuxihlong yunkunaychiduiz
+
+    }
+
     function startTracking() {
         if (selectedStop == -1) {
             alert("Please select a bus stop");
@@ -116,11 +163,33 @@
                     alert("No buses found for this route");
                     return;
                 }//zhegewodoumeiyouxiangdao 
-                console.log(possibleBusIDs)
-                setInterval(checkForBus, possibleBusIDs, milage, selectedStop, 1000);
+                console.log(possibleBusIDs) //why not arrayttxkoueinyachichao yachiduzixianziakeyileyangbenlaishi12 yachiaychiyachi hlongbeirenchao zhege chuanshujuchucuole hlongxkoufangpiyachi jiuzhi xingyici shiywei diaoyongyiweishishiyonghuidiaohanch
+                document.getElementById("GoButton").disabled = true;
+                document.getElementById("form").style.display = "none";
+                StopObj = getStopObject(selectedStop)
+                StopMark = new google.maps.Marker({ position: { lat: StopObj.lat, lng: StopObj.lon }, map: map });
+                var busMarkers = {}
+                for (var j = 0; j < possibleBusIDs.length; j++) {
+                    thiBus = getBusObjectByID(buses, possibleBusIDs[j])
+                    Busmark = new google.maps.Marker({ position: { lat: thiBus.lat, lng: thiBus.lon }, map: map });
+                    busMarkers[possibleBusIDs[j]] = Busmark;
+                }
+                console.log(busMarkers)
+                setInterval(function () {
+                    checkForBus(possibleBusIDs, milage, StopMark, StopObj, busMarkers, StopMark) //hlongkouekzheyangkeyiyunnaioxkou huang 
+                }, 3000);
 
             });
     }
+    function getStopObject(stopID) {
+        for (var i = 0; i < stops.length; i++) {
+            if (stops[i].id == stopID) {
+                return stops[i];
+            }
+        }
+    } //gen by github copoit
+
+
     function initMap() {
         const myLatLng = { lat: 38.9517, lng: -92.3341 };
         map = new google.maps.Map(document.getElementById("GMap"), {
@@ -128,10 +197,13 @@
             center: myLatLng,
         });
     }
+    if (localStorage.getItem("notif") == null) {
+        alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia.\
+This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
+e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
+        localStorage.setItem("notif", "1");
 
-    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia.\
-     This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
-      e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
+    }
     new Vue({
         el: '#app',
         data: {
@@ -173,13 +245,13 @@
                             triangleCoords.push({ lat: route.path[i * 2], lng: route.path[i * 2 + 1] });
 
                         }
-                        var stops = {};
+                        // var stops = {};
                         fetch('http://coder.weathon.top:8888/stops')
                             .then(function (response) {
                                 return response.json();
                             })
                             .then(function (json) {
-                                var stops = json;
+                                stops = json;
                                 console.log(stops)
                                 markers = [] //not {}
 

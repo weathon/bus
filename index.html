@@ -13,6 +13,9 @@
 </head>
 
 <body>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgMo2y743lim1h4IGq3BvlUl8Ar0fl1hQ&callback=initMap&v=weekly"
+        async></script>
     <!-- Ajax get a list and put in a list -->
 
     <ion-app id="app">
@@ -43,9 +46,42 @@
 </body>
 <ul>
 </ul>
+
+
+<ion-modal id="card-modal">
+    <ion-content>
+        <ion-header translucent>
+            <ion-toolbar>
+                <ion-title>Map</ion-title>
+            </ion-toolbar>
+        </ion-header>
+        <br />
+        <ion-list-header>Select A Bus Stop That You Will Get On The Bus</ion-list-header>
+        <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
+        <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification. </ion-list-header>
+        <ion-item><ion-input type="number" placeholder="Enter a number"></ion-input></ion-item>
+        <ion-item><ion-button>Set The Alarm!</ion-button></ion-item>
+    </ion-content>
+</ion-modal>
+
+
 <script>
+    function initMap() {
+        const myLatLng = { lat: -25.363, lng: 131.044 };
+        const map = new google.maps.Map(document.getElementById("GMap"), { //id wentitt gan
+            zoom: 4,
+            center: myLatLng,
+        });
+
+        new google.maps.Marker({
+            position: myLatLng,
+            map,
+            title: "Hello World!",
+        });
+    }
+
     // fetch json and https://gocomo.doublemap.com/map/v2/routes
-    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server.")
+    // alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server.")
     new Vue({
         el: '#app',
         data: {
@@ -72,37 +108,15 @@
                 console.log(loc)
             },
             setAlert: function (routeID) {
-                dis = prompt("The reminding distance threshold (in miles): ");
-                if (navigator.geolocation) {
-                    console.log("Success for geo.")
-                    console.log(routeID)
-                    console.log(dis)
-                    navigator.geolocation.getCurrentPosition(success, error)
-                    // setInterval(this.checkForBus, dis,routeID,dis, 5000); //kouke meiyoucanshujiukeyiyizhiyunxing  zhangkoukechongfuleyoushi qianmianyoushihoumina
-                }
-                else {
-                    alert("Geolocation is not supported by this browser or have been turned off by the user.");
-                }
+                // dis = prompt("The reminding distance threshold (in miles): ");
+                document.getElementById("card-modal").present()
+                initMap()
             }
         }
     });
-    function success(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
 
-
-        $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&language=en", function (data) {
-            var fulladd = data.results[0].formatted_address.split(",");
-            var count = fulladd.length;
-            $('#country').text(fulladd[count - 1]);
-            $('#city').text(fulladd[count - 2]);
-        })
-    };
-
-    function error(e) {
-        console.log(e)
-    }
 </script>
+
 </body>
 
 </html>

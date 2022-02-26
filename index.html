@@ -45,7 +45,7 @@
 </ul>
 <script>
     // fetch json and https://gocomo.doublemap.com/map/v2/routes
-    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. Please allow this app to use your location, we will not store or send your location over the internet. The data of the app is fetched from Doublemap via my own server.")
+    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server.")
     new Vue({
         el: '#app',
         data: {
@@ -62,29 +62,46 @@
                 });
         },
         methods: {
-            checkForBus: function (dis, id, loc) { 
+            checkForBus: function (dis, id, loc) {
                 //koukeyahci whyalertkyiqitadbuxingyunerqiezhishiyici
-            //    alert(dis)
-            
-            //get users location
-            conodle.log(dis)
-            conodle.log(id)
-            console.log(loc)
+                //    alert(dis)
+
+                //get users location
+                conodle.log(dis)
+                conodle.log(id)
+                console.log(loc)
             },
             setAlert: function (routeID) {
                 dis = prompt("The reminding distance threshold (in miles): ");
                 if (navigator.geolocation) {
-                    setInterval(this.checkForBus, dis,routeID,dis, 5000); //kouke meiyoucanshujiukeyiyizhiyunxing  zhangkoukechongfuleyoushi qianmianyoushihoumina
-
-
+                    console.log("Success for geo.")
+                    console.log(routeID)
+                    console.log(dis)
+                    navigator.geolocation.getCurrentPosition(success, error)
+                    // setInterval(this.checkForBus, dis,routeID,dis, 5000); //kouke meiyoucanshujiukeyiyizhiyunxing  zhangkoukechongfuleyoushi qianmianyoushihoumina
                 }
-                else{
+                else {
                     alert("Geolocation is not supported by this browser or have been turned off by the user.");
                 }
             }
         }
     });
+    function success(position) {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
 
+
+        $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&language=en", function (data) {
+            var fulladd = data.results[0].formatted_address.split(",");
+            var count = fulladd.length;
+            $('#country').text(fulladd[count - 1]);
+            $('#city').text(fulladd[count - 2]);
+        })
+    };
+
+    function error(e) {
+        console.log(e)
+    }
 </script>
 </body>
 

@@ -3,6 +3,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests 
+from fastapi.responses import HTMLResponse, FileResponse
+
 
 origins =["*"]
 app = FastAPI()
@@ -25,3 +27,15 @@ async def root():
 async def root():
     r = requests.get('https://gocomo.doublemap.com/map/v2/buses')
     return r.json()
+
+#return STATIC html
+@app.get("/", response_class=HTMLResponse)
+async def read_items():
+    f = open("index.html", "r")
+    fileContent = f.read()
+    f.close()
+
+
+@app.get("/", response_class=FileResponse)
+async def main():
+    return "audio.mp3"

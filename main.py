@@ -15,7 +15,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/routes")
 async def root():
     r = requests.get('https://gocomo.doublemap.com/map/v2/routes')
+    return r.json()
+
+
+@app.get("/buses")
+async def root():
+    r = requests.get('https://gocomo.doublemap.com/map/v2/buses')
     return r.json()

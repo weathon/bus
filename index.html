@@ -9,7 +9,7 @@
 <body>
     <!-- Ajax get a list and put in a list -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <ul id="example-1">
+    <ul id="app">
         <li v-for="item in list" :key="list.name">
           {{ item.name }}
         </li>
@@ -24,7 +24,7 @@
             },
             created: function() {
                 var self = this;
-                fetch('https://gocomo.doublemap.com/map/v2/stops')
+                fetch('http://coder.weathon.top:8888/routes')
                     .then(function(response) {
                         return response.json();
                     })

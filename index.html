@@ -58,6 +58,7 @@
         <p>Now this app is calculating the line distance not the driving distance, sorry.</p>
         <!-- bozishangsuanruantyrunhuxihlongxou -->
         <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
+        <div id="mile"></div>
         <div id="form">
             <p id="selected"></p>
             <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
@@ -111,7 +112,9 @@
                         // console.log("found not found faruannashou shouruan aashiain")
                         busMarkers[buses[i].id].setPosition({ lat: buses[i].lat, lng: buses[i].lon });
                         // haversine_distance(busMarkers[buses[i].id], StopObj);
-                        if (haversine_distance(busMarkers[buses[i].id], StopMark) <= milage) {
+                        realMile = haversine_distance(busMarkers[buses[i].id], StopMark);
+                        document.getElementById("mile").innerHTML = "The distance from the bus to the stop is " + realMile + " miles";
+                        if (realMile <= milage) {
                             var audio = new Audio('http://coder.weathon.top:8888/audio');
                             audio.play();
                         }

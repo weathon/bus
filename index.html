@@ -1,39 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bus</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <title>CoMo Bus Timer</title>
 </head>
+
 <body>
     <!-- Ajax get a list and put in a list -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <ul id="app">
-        <li v-for="item in list" :key="list.name">
-          {{ item.name }}
-        </li>
-      </ul>
-    <script>
-        // fetch json and https://gocomo.doublemap.com/map/v2/routes
 
-        new Vue({
-            el: '#app',
-            data: {
-                list: []
-            },
-            created: function() {
-                var self = this;
-                fetch('http://coder.weathon.top:8888/routes')
-                    .then(function(response) {
-                        return response.json();
-                    })
-                    .then(function(json) {
-                        self.list = json;
-                    });
-            }
-        });
+    <ion-app id="app">
+        <ion-header translucent>
+            <ion-toolbar>
+                <ion-title>CoMo Bus Timer</ion-title>
+            </ion-toolbar>
+        </ion-header>
 
-    </script>
+        <ion-content fullscreen>
+            <ion-list>
+                <ion-list-header> Select A Route </ion-list-header>
+
+                <ion-item v-for="item in list" :key="list.name" @click="setAlert(item.id)">
+                    <ion-avatar slot="start">
+                        <ion-icon name="bus" size="large" v-bind:style="{width: '100%', color: '#'+item.color}">
+                        </ion-icon>
+                        <!--  why zai qianmian jianbang kouke yuanlaivue youjuecuoyuntt buxuanze bujia shang# bu huixianshi jianbanaaa
+                         -->
+                    </ion-avatar>
+                    <ion-label>
+                        <h2>{{ item.name }}</h2>
+                    </ion-label>
+                </ion-item>
+            </ion-list>
+        </ion-content>
+    </ion-app>
 </body>
+<ul>
+</ul>
+<script>
+    // fetch json and https://gocomo.doublemap.com/map/v2/routes
+    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. Please allow this app to use your location, we will not store or send your location over the internet. The data of the app is fetched from Doublemap via my own server.")
+    new Vue({
+        el: '#app',
+        data: {
+            list: []
+        },
+        created: function () {
+            var self = this;
+            fetch('http://coder.weathon.top:8888/routes')
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (json) {
+                    self.list = json;
+                });
+        },
+        methods: {
+            checkForBus: function (dis, id, loc) { 
+                //koukeyahci whyalertkyiqitadbuxingyunerqiezhishiyici
+            //    alert(dis)
+            
+            //get users location
+            conodle.log(dis)
+            conodle.log(id)
+            console.log(loc)
+            },
+            setAlert: function (routeID) {
+                dis = prompt("The reminding distance threshold (in miles): ");
+                if (navigator.geolocation) {
+                    setInterval(this.checkForBus, dis,routeID,dis, 5000); //kouke meiyoucanshujiukeyiyizhiyunxing  zhangkoukechongfuleyoushi qianmianyoushihoumina
+
+
+                }
+                else{
+                    alert("Geolocation is not supported by this browser or have been turned off by the user.");
+                }
+            }
+        }
+    });
+
+</script>
+</body>
+
 </html>

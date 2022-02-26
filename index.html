@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus</title>
+</head>
+<body>
+    <!-- Ajax get a list and put in a list -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <ul id="example-1">
+        <li v-for="item in list" :key="list.name">
+          {{ item.name }}
+        </li>
+      </ul>
+    <script>
+        // fetch json and https://gocomo.doublemap.com/map/v2/routes
+
+        new Vue({
+            el: '#app',
+            data: {
+                list: []
+            },
+            created: function() {
+                var self = this;
+                fetch('https://gocomo.doublemap.com/map/v2/stops')
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(json) {
+                        self.list = json;
+                    });
+            }
+        });
+
+    </script>
+</body>
+</html>

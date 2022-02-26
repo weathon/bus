@@ -13,8 +13,6 @@
 </head>
 
 <body>
-
-    <!-- Ajax get a list and put in a list -->
     <script
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAgMo2y743lim1h4IGq3BvlUl8Ar0fl1hQ&callback=initMap&v=weekly"
         async></script>
@@ -33,8 +31,6 @@
                     <ion-avatar slot="start">
                         <ion-icon name="bus" size="large" v-bind:style="{width: '100%', color: '#'+item.color}">
                         </ion-icon>
-                        <!--  why zai qianmian jianbang kouke yuanlaivue youjuecuoyuntt buxuanze bujia shang# bu huixianshi jianbanaaa
-                         -->
                     </ion-avatar>
                     <ion-label>
                         <h2>{{ item.name }}</h2>
@@ -54,10 +50,13 @@
         <ion-header translucent>
             <ion-toolbar>
                 <ion-title>Map</ion-title>
+                <ion-button onclick="location.reload()">Exit</ion-button>
+
             </ion-toolbar>
         </ion-header>
         <br />
         <ion-list-header>Select A Bus Stop That You Will Get On The Bus</ion-list-header>
+        <!-- <p>Now this app won't show the buses' location, sorry.</p> -->
         <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
         <p id="selected"></p>
         <ion-list-header>How many miles before the bus approaches the stop do you want to get a notification.
@@ -65,28 +64,74 @@
         <ion-item>
             <ion-input type="number" placeholder="Enter a number"></ion-input>
         </ion-item>
-        <!-- <ion-item> -->
-        <ion-button expand="block">Set The Notification!</ion-button>
-        <!-- </ion-item> -->
+        <ion-button expand="block" onclick="startTracking()">Set The Notification!</ion-button>
     </ion-content>
-    <!-- The bus icon is created by <a href="https://iconscout.com/icons/dot" target="_blank">Dot Icon</a> by <a href="https://iconscout.com/contributors/daniel-bruce">Daniel Bruce</a> on <a href="https://iconscout.com">Iconscout</a> -->
 </ion-modal>
 
 
 <script>
     document.getElementById("card-modal").backdropDismiss = false;
     document.getElementById("card-modal").showBackdrop = 1;
+    var selectedStop = -1;
+    var selectedRoute = -1;
+    function checkForBus(possibleBusIDs, milage, selectedStop) {
+        console.log([possibleBusIDs, milage, selectedStop])
+    }
+    
+    function startTracking() {
+        if (selectedStop == -1) {
+            alert("Please select a bus stop");
+            return;
+        }
+        if (selectedRoute == -1) {
+            alert("Please select a route");
+            return;
+        }
+        milage = document.getElementsByTagName("ion-input")[0].value;
+        console.log(milage); //why is this not working? huangbierenchaojlphcjaxlxpiui xueyabierenwnaifangconsole you -url
+        if (milage == "") {
+            alert("Please enter a number");
+            return;
+        }
+        if (Number(milage) == NaN) {
+            alert("Please enter a number");
+            return;
+        }
+        //fetch from http://coder.weathon.top:8888/buses
+        fetch('http://coder.weathon.top:8888/buses')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (buses) {
+                possibleBusIDs = []; //zhege huigengxing?yachihong 
 
+                for (var i = 0; i < buses.length; i++) {
+                    if (buses[i].route == selectedRoute) {
+                        possibleBusIDs.push(buses[i].id);
+                    }
+                    // setInterval(checkForBus, possibleBusIDs, milage, selectedStop, 1000);
+
+                }
+                if (possibleBusIDs.length == 0) {
+                    alert("No buses found for this route");
+                    return;
+                }//zhegewodoumeiyouxiangdao 
+                console.log(possibleBusIDs)
+                setInterval(checkForBus, possibleBusIDs, milage, selectedStop, 1000);
+
+            });
+    }
     function initMap() {
         const myLatLng = { lat: 38.9517, lng: -92.3341 };
-        map = new google.maps.Map(document.getElementById("GMap"), { //id wentitt gan
+        map = new google.maps.Map(document.getElementById("GMap"), {
             zoom: 12,
             center: myLatLng,
-        }); //yong consta xiaianyongbuliao
+        });
     }
 
-    // fetch json and https://gocomo.doublemap.com/map/v2/routes
-    // alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia. This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
+    alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia.\
+     This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
+      e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
     new Vue({
         el: '#app',
         data: {
@@ -103,48 +148,32 @@
                 });
         },
         methods: {
-            checkForBus: function (dis, id, loc) {
-                //koukeyahci whyalertkyiqitadbuxingyunerqiezhishiyici
-                //    alert(dis)
 
-                //get users location
-                conodle.log(dis)
-                conodle.log(id)
-                console.log(loc)
-            },
             setAlert: function (routeID) {
-                // dis = prompt("The reminding distance threshold (in miles): ");
+                selectedRoute = routeID;
                 document.getElementById("card-modal").present()
-                // initMap()
                 fetch('http://coder.weathon.top:8888/routes')
                     .then(function (response) {
                         console.log(routeID)
-                        // console.log(response.json()) ajax!!wangjile!
                         return response.json();
                     })
                     .then(function (json) {
                         console.log(json)
-                        for (var i = 0; i < json.length; i++) { //copolit thiw whole function, bnot json() tho
+                        for (var i = 0; i < json.length; i++) {
                             console.log(json[i].id)
                             if (json[i].id == routeID) {
                                 var route = json[i]
                                 break;
                             }
                         }
-                        // return route;
-                        // new google.maps.Marker({
-                        //     // myLatLng
-                        //     position: { lat: 38.9517, lng: -92.3341 },
-                        //     map,
-                        // });
+
                         const triangleCoords = [
                         ];
                         for (var i = 0; i < route.path.length / 2; i++) {
                             triangleCoords.push({ lat: route.path[i * 2], lng: route.path[i * 2 + 1] });
-                            //you sure this is from copolit, gangkaishi hai yiweishism wanyi/ pathshism yuyiduihuansuanttyiweisvg zhejianzhishishengqi aaa!!!push houmianquanbushengchengchulais
+
                         }
-                        var stops = {}; //yuenixnbunenghzijie stops;
-                        var selectedStop = -1;
+                        var stops = {};
                         fetch('http://coder.weathon.top:8888/stops')
                             .then(function (response) {
                                 return response.json();
@@ -167,23 +196,12 @@
                                                 // title: stop.name,
                                                 // stopID: stop.id,
                                             }));
-                                            addEvent(stop, markers[length - 1]);//weismmeixiangdao
-                                            // markers[markers.length-1].addListener("click", () => {
-                                            // google.maps.event.addListener(markers[markers.length-1], "click", () => {
-                                            //     console.log(stop.name)
-                                            //     document.getElementById("selected").innerHTML = "You have selected " + stop.name;
-                                            // }); // meixinagdao haiyouname
-                                            // document.getElementById("selected").innerHTML = "&#160;&#160;&#160;&#160;Stop Selected. " + stop.id //quanbudoushiyiyangde hlonsgaunkouekzangshou push
-                                            // selectedStop = stop.id;
-                                            // });
+                                            addEvent(stop, markers[length - 1]);
                                         }
                                     }
                                 }
                             })
-                        // console.log(stops)//exinxkouwngjileyifbuhlongsuan
 
-
-                        // Construct the polygon.
                         console.log(triangleCoords)
                         bermudaTriangle = new google.maps.Polyline({
                             path: triangleCoords,
@@ -192,7 +210,6 @@
                             strokeWeight: 4,
                         });
                         bermudaTriangle.setMap(map);
-                        // xkoukouke gaicheng butianchong yanse yijing qingkonghenduoshiqing shiqinghencudobuxinagquchifan
                     });
 
             }
@@ -200,17 +217,12 @@
     });
     function addEvent(stop, marker) {
         console.log(stop);
-        // marker.addListener("click", () => {
-        //     console.log(stop.name)
-        //     document.getElementById("selected").innerHTML = "You have selected " + stop.name;
-        // });
         google.maps.event.addListener(markers[markers.length - 1], "click", () => {
             console.log(stop.name)
             document.getElementById("selected").innerHTML = "You have selected " + stop.name;
-        }); //xkouhlongzheyangkeyile!
+            selectedStop = stop.id
+        });
     }
-
-//hanerduoxkoubierenchaozidongfuzhide tiechulailekun 
 </script>
 
 </body>

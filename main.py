@@ -28,6 +28,11 @@ async def root():
     r = requests.get('https://gocomo.doublemap.com/map/v2/buses')
     return r.json()
 
+@app.get("/stops")
+async def root():
+    r = requests.get('https://gocomo.doublemap.com/map/v2/stops')
+    return r.json()
+
 #return STATIC html
 @app.get("/", response_class=HTMLResponse)
 async def read_items():

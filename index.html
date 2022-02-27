@@ -8,7 +8,9 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+     -->
+     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
     <title>CoMo Bus Timer</title>
 </head>
 
@@ -33,6 +35,8 @@
         </ion-header>
 
         <ion-content fullscreen>
+        <!-- <audio src="https://busmap.weathon.top/audio" autoPlay></audio> -->
+
             <ion-list>
                 <ion-list-header> Select A Route </ion-list-header>
 
@@ -54,7 +58,6 @@
 
 
 <ion-modal id="card-modal" backdropDismiss=false>
-
     <ion-content>
         <ion-header translucent>
             <ion-toolbar>
@@ -76,14 +79,15 @@
                 <ion-input type="number" value="0.3" placeholder="Enter a number"></ion-input>
             </ion-item>
         </div>
-        <ion-button expand="block" onclick="startTracking()" id="GoButton">Set The Notification!</ion-button>
+        <ion-button expand="block" onclick="audio.play();startTracking();" id="GoButton">Set The Notification!</ion-button>
     </ion-content>
 </ion-modal>
 
 
 <script>
-    audio = new Audio('/audio');
-
+    audio = new Audio('https://busmap.weathon.top/audio'); //undefineded? ceshideshi  busmap
+    audio.muted=true;
+    
     document.getElementById("card-modal").backdropDismiss = false;
     document.getElementById("card-modal").showBackdrop = 1;
     var selectedStop = -1;
@@ -111,7 +115,7 @@
     }
     function checkForBus(possibleBusIDs, milage, selectedStop, StopObj, busMarkers, StopMark) {
         // console.log(busMarkers)
-        fetch('/buses')
+        fetch('https://busmap.weathon.top/buses')
             .then(function (response) {
                 return response.json();
             })
@@ -126,7 +130,12 @@
                         realMile = haversine_distance(busMarkers[buses[i].id], StopMark);
                         document.getElementById("mile").innerText = "The distance from the bus to the stop is " + realMile + " miles";
                         if (realMile <= milage) {
-                            audio.muted=false;
+                            if(audio.muted==true)
+                            {
+                                audio.muted=false;
+                            }
+                            audio.play(); 
+
                         }
                     }
                 }
@@ -138,8 +147,7 @@
     }
 
     function startTracking() {
-        audio.muted=true;
-        audio.play()
+        // audio.muted=true;
         if (selectedStop == -1) {
             alert("Please select a bus stop");
             return;
@@ -159,7 +167,7 @@
             return;
         }
         //fetch from /buses
-        fetch('/buses')
+        fetch('https://busmap.weathon.top/buses')
             .then(function (response) {
                 return response.json();
             })
@@ -225,7 +233,7 @@
         },
         created: function () {
             var self = this;
-            fetch('/routes')
+            fetch('https://busmap.weathon.top/routes')
                 .then(function (response) {
                     return response.json();
                 })
@@ -238,7 +246,7 @@
             setAlert: function (routeID) {
                 selectedRoute = routeID;
                 document.getElementById("card-modal").present()
-                fetch('/routes')
+                fetch('https://busmap.weathon.top/routes')
                     .then(function (response) {
                         console.log(routeID)
                         return response.json();
@@ -260,7 +268,7 @@
 
                         }
                         // var stops = {};
-                        fetch('/stops')
+                        fetch('https://busmap.weathon.top/stops')
                             .then(function (response) {
                                 return response.json();
                             })

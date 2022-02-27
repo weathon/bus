@@ -82,6 +82,8 @@
 
 
 <script>
+    audio = new Audio('/audio');
+
     document.getElementById("card-modal").backdropDismiss = false;
     document.getElementById("card-modal").showBackdrop = 1;
     var selectedStop = -1;
@@ -124,8 +126,7 @@
                         realMile = haversine_distance(busMarkers[buses[i].id], StopMark);
                         document.getElementById("mile").innerText = "The distance from the bus to the stop is " + realMile + " miles";
                         if (realMile <= milage) {
-                            var audio = new Audio('/audio');
-                            audio.play();
+                            audio.muted=false;
                         }
                     }
                 }
@@ -137,6 +138,8 @@
     }
 
     function startTracking() {
+        audio.muted=true;
+        audio.play()
         if (selectedStop == -1) {
             alert("Please select a bus stop");
             return;
@@ -208,11 +211,11 @@
             center: myLatLng,
         });
     }
-    if (localStorage.getItem("notif") == null) {
+    if (localStorage.getItem("notif") == null || localStorage.getItem("notif") <= Date.now()-3600*48) {
         alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia.\
-This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
-e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. ")
-        localStorage.setItem("notif", "1");
+ This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
+ e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. Due to iOS audio policy, the app might not be ablr to play the audio by defult, we are trying to solve this issue. ")
+        localStorage.setItem("notif", Date.now());
 
     }
     new Vue({

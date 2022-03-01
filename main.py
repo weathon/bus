@@ -49,3 +49,8 @@ async def main():
 @app.get("/dot.png", response_class=FileResponse)
 async def main():
     return "dot.png"
+
+
+@app.get("/version")
+async def main():
+    return "1.0"

@@ -85,6 +85,14 @@
 
 
 <script>
+     fetch('https://busmap.weathon.top/version')
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (v) {
+     if(v!="1.0")
+     {alert("Your App is out of date, please upgrade or use the web version. (You can still keep using this version but we cannot ensure it works well.)")}})
+         
     audio = new Audio('https://busmap.weathon.top/audio'); //undefineded? ceshideshi  busmap
     audio.muted=true;
     
@@ -222,7 +230,7 @@
     if (localStorage.getItem("notif") == null || localStorage.getItem("notif") <= Date.now()-3600*48) {
         alert("This app is made by a Mizzou student, who is NOT connected with the University of Missouri, Tiger Line, GoCoMo, or the City of Columbia.\
  This app only represents my position. This app is still in testing; it might cause a false alert or miss alert. If you have any advice, please\
- e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. Due to iOS audio policy, the app might not be ablr to play the audio by defult, we are trying to solve this issue. ")
+ e-mail wg25r@umsystem.edu. The data of the app is fetched from Doublemap via my own server. Due to iOS audio policy, the app might not be able to play the audio by defult, we are trying to solve this issue. ")
         localStorage.setItem("notif", Date.now());
 
     }

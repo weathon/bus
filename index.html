@@ -61,17 +61,21 @@
 
 
 <ion-modal id="card-modal" backdropDismiss=false>
-    <ion-content  class="ion-padding">
-        <ion-header translucent>
+            <ion-header translucent>
             <ion-toolbar>
                 <ion-title>Map</ion-title>
                 <ion-button onclick="location.reload()" slot="start">Exit</ion-button>
             </ion-toolbar>
         </ion-header>
+    
+    <ion-content  class="ion-padding">
+
         <br />
-        <ion-list-header>Select A Bus Stop That You Will Get On The Bus</ion-list-header>
+        
         <p>Now this app is calculating the line distance not the driving distance, sorry.</p>
         <b>Please keep the app open as we knew on some phones this app won't work in backgraound</b>
+        
+        <h3>Select A Bus Stop That You Will Get On The Bus</h3>
         <!-- bozishangsuanruantyrunhuxihlongxou -->
         <div id="GMap" style="height: 60%;width:95%;left:2.5%"></div>
         <div id="mile"></div>

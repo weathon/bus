@@ -38,8 +38,9 @@
         <!-- <audio src="https://busmap.weathon.top/audio" autoPlay></audio> -->
 
             <ion-list>
-                            <P>You can add this to your home screen for ease of access</p>
-            <p>This app is open source and we need more volunteers! Please e-mail me if you are interst. wg25r@umsystem.edu</p>
+                <ion-text>
+                                            <P>You can add this to your home screen for ease of access</p>
+            <p>This app is open source and we need more volunteers! Please e-mail me if you are interst. wg25r@umsystem.edu</p></ion-text>
                 <ion-list-header> Select A Route </ion-list-header>
 
                 <ion-item v-for="item in list" :key="list.name" @click="setAlert(item.id)">
